@@ -22,7 +22,7 @@ Next Generation Visual Analytics is a comprehensive Streamlit application that a
 ├── ai_assistant.py            # AI assistant module
 ├── dataset_analyzer.py        # AI assistant data analysis module
 ├── README.md                  # This file
-├── data/                      #  Includes sample datasets and test images for image analysis
+├── data/                      # Includes sample datasets and test images for image analysis
 │   └── NextGen.png            # Dashboard logo
 ├── Demo/                      # Demo Videos explaining how to use the dashboard                    
 ```
@@ -95,16 +95,16 @@ Users can customize axes, color by categorical column, choose from a wide range 
 4. Dimensionality reduction:
 This dashboard also has the option to perform dimensionality reduction once the dataset has been cleaned. The 3 most common dimensionality reduction methods (PCA, t-SNE, and UMAP) have been included in this dashboard.
 
-Users have the option of selecting all the numeric features or choose which specific features they want, along with optional standardization (recommended). 
-Each dimensionality reduction method has its own set of hyperparameters with default values, which can also be adjusted to the user's preference.
-### Choose PCA/t-SNE/UMAP:
-  - PCA: Set n_components; view explained variance bar+line, feature loadings table & heatmap, and plot 2D/3D scatter.
-  - t-SNE: Adjust perplexity & n_iter; plot 2D scatter.
-  - UMAP: Adjust n_neighbors & min_dist; plot 2D scatter.
-- Optionally append reduced dimensions to dataset and download updated CSV and plot as a PNG.
+  Users have the option of selecting all the numeric features or choose which specific features they want, along with optional standardization (recommended). 
+  Each dimensionality reduction method has its own set of hyperparameters with default values, which can also be adjusted to the user's preference.
+  ### Choose PCA/t-SNE/UMAP:
+    - PCA: Set n_components; view explained variance bar+line, feature loadings table & heatmap, and plot 2D/3D scatter.
+    - t-SNE: Adjust perplexity & n_iter; plot 2D scatter.
+    - UMAP: Adjust n_neighbors & min_dist; plot 2D scatter.
+  - Optionally append reduced dimensions to dataset and download updated CSV and plot as a PNG.
 
 5. Machine Learning:
-The dashboard also includes ML modelling. The user gets to select the target label, and the dashboard automatically plots class distribution. Within the dashboard, the users can also manually select features or use the automated feature selection techniques based on statistical criteria, such as ANOVA F-value scoring or Mutual Information ranking. If the user selects automatic methods, the system generates a ranking of features based on their importance scores, prioritising the strongest predictors for the model. Following feature selection, the users have the option to apply feature preprocessing by standardising the features (zero mean and unit variance), which is recommended to ensure consistent feature scales, particularly for models sensitive to input magnitude, such as SVM and Logistic Regression.
+  The dashboard also includes ML modelling. The user gets to select the target label, and the dashboard automatically plots class distribution. Within the dashboard, the users can also manually select features or use the automated feature selection techniques based on statistical criteria, such as ANOVA F-value scoring or Mutual Information ranking. If the user selects automatic methods, the system generates a ranking of features based on their importance scores, prioritising the strongest predictors for the model. Following feature selection, the users have the option to apply feature preprocessing by standardising the features (zero mean and unit variance), which is recommended to ensure consistent feature scales, particularly for models sensitive to input magnitude, such as SVM and Logistic Regression.
 
 To accommodate a range of predictive models, the dashboard allows users to choose from:  
 - Logistic Regression
@@ -113,17 +113,15 @@ To accommodate a range of predictive models, the dashboard allows users to choos
 - XGBoost
 - KNN
 
-Each model comes with customizable hyperparameters, enabling users to fine-tune the model settings based on the specific characteristics of their dataset. After configuring the model, users can define the number of folds for cross-validation. The system implements stratified k-fold cross-validation, which maintains the original class distribution within each fold to ensure fair evaluation. After training, the dashboard automatically evaluates model performance across the cross-validation folds. A summary table displaying fold-by-fold accuracy (and AUC for binary classification) is generated, providing a direct assessment of model stability across different splits. The average accuracy and AUC scores are displayed, offering users a quick overview of overall performance. To further interpret model behaviour, a confusion matrix is generated, visually presenting the true versus predicted class distributions. This allows the users to easily detect patterns such as high false positives or false negatives. To support reusability and practical deployment, the dashboard provides functionality to save trained models alongside their preprocessing pipeline and metadata, including selected features, label encoders, and normalization parameters. Models are exported as serialized joblib files, ensuring compatibility with standard Python environments. Additionally, users can upload a trained model and a new dataset to perform inference directly within the dashboard. The system validates whether required features are present in the new data, applies consistent preprocessing (e.g., scaling, encoding), and outputs predictions with optional downloading.
+  Each model comes with customizable hyperparameters, enabling users to fine-tune the model settings based on the specific characteristics of their dataset. After configuring the model, users can define the number of folds for cross-validation. The system implements stratified k-fold cross-validation, which maintains the original class distribution within each fold to ensure fair evaluation. After training, the dashboard automatically evaluates model performance across the cross-validation folds. A summary table displaying fold-by-fold accuracy (and AUC for binary classification) is generated, providing a direct assessment of model stability across different splits. The average accuracy and AUC scores are displayed, offering users a quick overview of overall performance. To further interpret model behaviour, a confusion matrix is generated, visually presenting the true versus predicted class distributions. This allows the users to easily detect patterns such as high false positives or false negatives. To support reusability and practical deployment, the dashboard provides functionality to save trained models alongside their preprocessing pipeline and metadata, including selected features, label encoders, and normalization parameters. Models are exported as serialized joblib files, ensuring compatibility with standard Python environments. Additionally, users can upload a trained model and a new dataset to perform inference directly within the dashboard. The system validates whether required features are present in the new data, applies consistent preprocessing (e.g., scaling, encoding), and outputs predictions with optional downloading.
  
-6. Medical Image Analysis:
-Users can  upload `.nii` or `.nii.gz` formatted CT or MRI scans. The dashnoard reads the volumetric data and displays axial slices with a slider for navigation. There are built-in controls for windowing (window center and width) to enable optimized visualization of anatomical structures and then perform segmentation.
+6. Medical Image Analysis: Users can  upload `.nii` or `.nii.gz` formatted CT or MRI scans. The dashnoard reads the volumetric data and displays axial slices with a slider for navigation. There are built-in controls for windowing (window center and width) to enable optimized visualization of anatomical structures and then perform segmentation.
 
-For organ segmentation, two powerful pre-trained models are available: 
-  (i) LungMask - Automatically segments lung regions using a deep learning-based model. The resulting lung mask is overlaid on the CT slices for inspection and can be downloaded as an image.
-  (ii) TotalSegmentator - Provides fine-grained multi-organ segmentation. Users can choose from a wide range of anatomical structures (liver, spleen, kidneys, heart, lungs, aorta, pancreas, brain, bladder) and generate organ-specific masks. These masks are visualized in color overlays and are downloadable in .nii.gz format as well.
+  For organ segmentation, two powerful pre-trained models are available: 
+    (i) LungMask - Automatically segments lung regions using a deep learning-based model. The resulting lung mask is overlaid on the CT slices for inspection and can be downloaded as an image.
+    (ii) TotalSegmentator - Provides fine-grained multi-organ segmentation. Users can choose from a wide range of anatomical structures (liver, spleen, kidneys, heart, lungs, aorta, pancreas, brain, bladder) and generate organ-specific masks. These masks are visualized in color overlays and are downloadable in .nii.gz format as well.
 
-7. Natural Image Analysis:
-Users can upload `.jpg`, `.jpeg`, or `.png` images and apply a suite of computer vision techniques implemented using Opencv. The following functionalities are available:
+7. Natural Image Analysis: Users can upload `.jpg`, `.jpeg`, or `.png` images and apply a suite of computer vision techniques implemented using Opencv. The following functionalities are available:
 - Grayscale conversion (transforms RGB images into single-channel grayscale)
 - Channel separation (splits the image into Red, Green, and Blue channels for separate visualization)
 - Image blurring and smoothing (includes Gaussian Blur, Median Blur, and Bilateral Filter options for noise reduction)
@@ -132,7 +130,7 @@ Users can upload `.jpg`, `.jpeg`, or `.png` images and apply a suite of computer
 - Thresholding (offers Binary, Binary Inverted, Truncated, To Zero, Adaptive Mean, Adaptive Gaussian, and Otsu's method to binarize images based on pixel intensity)
 - Histogram Equalization (enhances image contrast, particularly useful in medical and low-light images)
 
- All processed images are displayed side-by-side with the original, and users can download the final outputs for further use. 
+   All processed images are displayed side-by-side with the original, and users can download the final outputs for further use. 
 
 8. AI Assistant:
 Finally, a conversational AI assistant is integrated into the dashboard to make it easier for biomedical researchers and doctors who lack computational skills to get started. This AI assistant is powered by Llama 4 Maverick with an option to fallback to Llama 3 if primary API gets rate limited. Once the user uploads the dataset,  the assistant automatically collects the following information so that it understands the data's structure and content before any questions are asked. 
@@ -140,5 +138,5 @@ Finally, a conversational AI assistant is integrated into the dashboard to make 
 (2) Dataset structure (column names and data types)
 (3) Preview of the first few rows
 
-After initialization, users can ask the assistant questions about any part of their analysis, such as understanding and interpreting PCA variance plots, tuning t-SNE perplexity, and selecting UMAP neighborhood sizes, as well as selecting suitable  ML algorithms and hyperparameters and providing suggestions on medical and natural image segmentation parameters. Under the hood, each user query is preceded by a system prompt incorporating the dataset information, ensuring that the answers are tailored to the actual variables and distributions. The assistant is rate-limited to 100 daily requests per user to maintain cost control while offering reliable service.
+  After initialization, users can ask the assistant questions about any part of their analysis, such as understanding and interpreting PCA variance plots, tuning t-SNE perplexity, and selecting UMAP neighborhood sizes, as well as selecting suitable  ML algorithms and hyperparameters and providing suggestions on medical and natural image segmentation parameters. Under the hood, each user query is preceded by a system prompt incorporating the dataset information, ensuring that the answers are tailored to the actual variables and distributions. The assistant is rate-limited to 100 daily requests per user to maintain cost control while offering reliable service.
 
