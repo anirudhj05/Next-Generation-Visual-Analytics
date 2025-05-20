@@ -118,6 +118,7 @@ To accommodate a range of predictive models, the dashboard allows users to choos
 6. Medical Image Analysis: Users can  upload `.nii` or `.nii.gz` formatted CT or MRI scans. The dashnoard reads the volumetric data and displays axial slices with a slider for navigation. There are built-in controls for windowing (window center and width) to enable optimized visualization of anatomical structures and then perform segmentation. For organ segmentation, two powerful pre-trained models are available:
 
     (i) LungMask - Automatically segments lung regions using a deep learning-based model. The resulting lung mask is overlaid on the CT slices for inspection and can be downloaded as an image.
+   
     (ii) TotalSegmentator - Provides fine-grained multi-organ segmentation. Users can choose from a wide range of anatomical structures (liver, spleen, kidneys, heart, lungs, aorta, pancreas, brain, bladder) and generate organ-specific masks. These masks are visualized in color overlays and are downloadable in .nii.gz format as well.
 
 8. Natural Image Analysis: Users can upload `.jpg`, `.jpeg`, or `.png` images and apply a suite of computer vision techniques implemented using Opencv. The following functionalities are available:
