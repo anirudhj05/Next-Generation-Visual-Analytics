@@ -4,6 +4,6 @@ An interactive, user-friendly biomedical data dashboard designed to automate com
 ## About The Dashboard:
 
 Next Generation Visual Analytics is a comprehensive Streamlit application that accelerates biomedical research by combining:
-### Data Preprocessing: Missing value handling, outlier detection, duplicates removal, transformations.
+# Data Preprocessing: Missing value handling, outlier detection, duplicates removal, transformations.
 
 
