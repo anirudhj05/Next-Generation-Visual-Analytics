@@ -10,9 +10,25 @@ from dataset_analyzer import DatasetAnalyzer
 try:
     from dotenv import load_dotenv
     load_dotenv()
-    print("Loaded environment variables from .env file")
 except ImportError:
-    print("python-dotenv not installed, using environment variables directly")
+    pass
+
+
+def get_secret(name, default=None):
+    """Resolve secrets with deployment-first precedence: Streamlit secrets, then env vars."""
+    try:
+        if name in st.secrets:
+            value = st.secrets[name]
+            if value:
+                return str(value)
+    except Exception:
+        # st.secrets may not be configured in local runs.
+        pass
+
+    value = os.getenv(name)
+    if value:
+        return value
+    return default
 
 def display_ai_assistant():
     st.title("🤖 AI Assistant")
@@ -184,17 +200,11 @@ def display_ai_assistant():
         st.session_state.service_provider = "OpenRouter.ai (Llama 4 Maverick)"
         st.rerun()
 
-# Hardcoded API Keys (Use with caution)
-OPENROUTER_API_KEY = "" ### Add your API
-REPLICATE_API_TOKEN = "" ### Add your API
-
-
 def get_openrouter_response(user_input):
     """
     Get response from OpenRouter.ai using Llama 4 Maverick
     """
-    # Get API key from environment variable with fallback
-    api_key = OPENROUTER_API_KEY
+    api_key = get_secret("OPENROUTER_API_KEY")
 
 
     
@@ -217,7 +227,13 @@ def get_openrouter_response(user_input):
              OPENROUTER_API_KEY=your_key_here
              ```
              
-        Restart the application after setting up your API key.
+                Restart the application after setting up your API key.
+
+                **On Streamlit Community Cloud:**
+                - Add in app settings -> Secrets:
+                    ```
+                    OPENROUTER_API_KEY="your_key_here"
+                    ```
         """
     
     # Format messages including chat history
@@ -245,16 +261,20 @@ def get_openrouter_response(user_input):
     
     Be precise, informative, and helpful. Explain concepts in clear terms appropriate for biomedical researchers."""
     
+    app_url = get_secret("OPENROUTER_APP_URL", "http://localhost")
+    app_title = get_secret("OPENROUTER_APP_NAME", "Biomedical Data Assistant")
+    openrouter_model = get_secret("OPENROUTER_MODEL", "meta-llama/llama-4-maverick:free")
+
     # Prepare request data - Using OpenRouter.ai format from their documentation
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",  # OpenRouter requires "Bearer" prefix
-        "HTTP-Referer": "https://replit.com",  # Helps with API usage tracking
-        "X-Title": "Biomedical Data Assistant"  # Helps with API usage tracking
+        "HTTP-Referer": app_url,
+        "X-Title": app_title
     }
     
     payload = {
-        "model": "meta-llama/llama-4-maverick:free",  # Using Llama 4 Maverick free tier
+        "model": openrouter_model,
         "messages": [
             {"role": "system", "content": system_message},
             *messages
@@ -312,8 +332,7 @@ def get_meta_llama_response(user_input):
     """
     Get response from Replicate's Llama 3 API (fallback)
     """
-    # Get API key from environment variable with fallback
-    api_key = REPLICATE_API_TOKEN
+    api_key = get_secret("REPLICATE_API_TOKEN")
 
 
     
@@ -337,7 +356,13 @@ def get_meta_llama_response(user_input):
              REPLICATE_API_TOKEN=your_token_here
              ```
              
-        Restart the application after setting up your API token.
+                Restart the application after setting up your API token.
+
+                **On Streamlit Community Cloud:**
+                - Add in app settings -> Secrets:
+                    ```
+                    REPLICATE_API_TOKEN="your_token_here"
+                    ```
         """
     
     # Format messages including chat history

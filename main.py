@@ -103,6 +103,41 @@ def get_current_df():
         return st.session_state.raw_df
 
 
+def build_dtype_table(df):
+    """Build a display-safe dtype table for Streamlit/Arrow serialization."""
+    dtypes_df = pd.DataFrame(df.dtypes.astype(str), columns=['Data Type'])
+    dtypes_df.index.name = 'Column'
+    return dtypes_df
+
+
+def _sanitize_arrow_value(value):
+    """Convert known Arrow-unsafe Python objects to deterministic strings."""
+    if isinstance(value, (np.dtype, pd.api.extensions.ExtensionDtype, type)):
+        return str(value)
+    if isinstance(value, (list, tuple, dict, set)):
+        return str(value)
+    return value
+
+
+def make_arrow_compatible(df):
+    """Prepare dataframe-like objects for stable Streamlit Arrow serialization."""
+    if isinstance(df, pd.Series):
+        df = df.to_frame()
+    if not isinstance(df, pd.DataFrame):
+        return df
+
+    safe_df = df.copy()
+    for col in safe_df.columns:
+        if pd.api.types.is_object_dtype(safe_df[col]):
+            safe_df[col] = safe_df[col].map(_sanitize_arrow_value)
+    return safe_df
+
+
+def dataframe_safe(df, **kwargs):
+    """Render dataframes through an Arrow-safe adapter."""
+    st.dataframe(make_arrow_compatible(df), **kwargs)
+
+
 import colorsys
 
 
@@ -241,14 +276,12 @@ if selected_page == "Home":
 
         # Preview of the dataset
         st.subheader("Quick Preview")
-        st.dataframe(st.session_state.raw_df.head(5), use_container_width=True)
+        dataframe_safe(st.session_state.raw_df.head(5), use_container_width=True)
 
         # Show data types information
         st.subheader("Data Types Overview")
-        dtypes_df = pd.DataFrame(st.session_state.raw_df.dtypes,
-                                 columns=['Data Type'])
-        dtypes_df.index.name = 'Column'
-        st.dataframe(dtypes_df, use_container_width=True)
+        dtypes_df = build_dtype_table(st.session_state.raw_df)
+        dataframe_safe(dtypes_df, use_container_width=True)
 
 elif selected_page == "Preview" and st.session_state.raw_df is not None:
     df = get_current_df()
@@ -260,7 +293,7 @@ elif selected_page == "Preview" and st.session_state.raw_df is not None:
 
     # Display the data
     st.subheader(f"First {show_rows} rows")
-    st.dataframe(df.head(show_rows), use_container_width=True)
+    dataframe_safe(df.head(show_rows), use_container_width=True)
 
     # Display data types
     st.subheader("Data Information")
@@ -277,9 +310,8 @@ elif selected_page == "Preview" and st.session_state.raw_df is not None:
 
     # Data types
     st.subheader("Column Data Types")
-    dtypes_df = pd.DataFrame(df.dtypes, columns=['Data Type'])
-    dtypes_df.index.name = 'Column'
-    st.dataframe(dtypes_df, use_container_width=True)
+    dtypes_df = build_dtype_table(df)
+    dataframe_safe(dtypes_df, use_container_width=True)
 
 elif selected_page == "Summary" and st.session_state.raw_df is not None:
     df = get_current_df()
@@ -288,7 +320,7 @@ elif selected_page == "Summary" and st.session_state.raw_df is not None:
     st.subheader("Statistical Summary")
     summary_df = df.describe(include='all').T
     summary_df['count'] = summary_df['count'].astype(int)
-    st.dataframe(summary_df, use_container_width=True)
+    dataframe_safe(summary_df, use_container_width=True)
 
     # Data distribution for numeric columns
     st.subheader("Data Distribution")
@@ -346,11 +378,11 @@ elif selected_page == "Clean Data" and st.session_state.raw_df is not None:
 
     if len(missing_df) > 0:
         st.write("🔎 Missing values per column:")
-        st.dataframe(missing_df, use_container_width=True)
+        dataframe_safe(missing_df, use_container_width=True)
 
         st.write("🔎 Sample rows with missing values:")
         missing_rows = df[df.isnull().any(axis=1)]
-        st.dataframe(missing_rows.head(10), use_container_width=True)
+        dataframe_safe(missing_rows.head(10), use_container_width=True)
         st.info(f"Total rows with missing values: {len(missing_rows)}")
     else:
         st.success("No missing values found in the dataset!")
@@ -611,7 +643,7 @@ elif selected_page == "Clean Data" and st.session_state.raw_df is not None:
 
             # Preview cleaned data
             st.subheader("Preview of Cleaned Data")
-            st.dataframe(cleaned_df.head(10), use_container_width=True)
+            dataframe_safe(cleaned_df.head(10), use_container_width=True)
 
     with tab2:
         st.subheader("Handle Duplicate Rows")
@@ -626,7 +658,7 @@ elif selected_page == "Clean Data" and st.session_state.raw_df is not None:
 
             # Show duplicate rows
             st.write("Duplicate rows:")
-            st.dataframe(df[df.duplicated(keep='first')])
+            dataframe_safe(df[df.duplicated(keep='first')])
 
             if st.button("Remove Duplicate Rows"):
                 updated_df = st.session_state.cleaned_df.drop_duplicates(
@@ -680,7 +712,7 @@ elif selected_page == "Clean Data" and st.session_state.raw_df is not None:
 
             if outlier_count > 0:
                 st.write("Outlier rows:")
-                st.dataframe(outliers)
+                dataframe_safe(outliers)
 
                 # Options for handling outliers
                 outlier_strategy = st.radio(
@@ -890,7 +922,7 @@ elif selected_page == "Clean Data" and st.session_state.raw_df is not None:
                     use_container_width=False,
                 )
             else:
-                excel_data = BytesIO()
+                excel_data = io.BytesIO()
                 st.session_state.cleaned_df.to_excel(excel_data,
                                                      index=False,
                                                      engine='xlsxwriter')
@@ -1337,7 +1369,7 @@ elif selected_page == "Filter & Plot" and st.session_state.raw_df is not None:
                 st.plotly_chart(fig, use_container_width=True)
 
                 st.markdown("**Correlation Matrix (Table View)**")
-                st.dataframe(corr_matrix.round(2), use_container_width=True)
+                dataframe_safe(corr_matrix.round(2), use_container_width=True)
             else:
                 st.warning(
                     "You need at least two numeric columns for a correlation heatmap."
@@ -1432,7 +1464,7 @@ elif selected_page == "Dimensionality Reduction" and st.session_state.raw_df is 
                     pca.components_.T,
                     columns=[f"PC{i+1}" for i in range(n_components)],
                     index=selected_features)
-                st.dataframe(loadings_df.round(3), use_container_width=True)
+                dataframe_safe(loadings_df.round(3), use_container_width=True)
 
                 fig_heatmap = px.imshow(
                     loadings_df,
@@ -1572,8 +1604,8 @@ elif selected_page == "Dimensionality Reduction" and st.session_state.raw_df is 
                 st.success(
                     f"Added {n_dims_to_add} {method} components to the dataset!"
                 )
-                st.dataframe(st.session_state.cleaned_df.head(),
-                             use_container_width=True)
+                dataframe_safe(st.session_state.cleaned_df.head(),
+                               use_container_width=True)
 
 elif selected_page == "Machine Learning" and st.session_state.raw_df is not None:
     df = get_current_df()
@@ -1683,8 +1715,8 @@ elif selected_page == "Machine Learning" and st.session_state.raw_df is not None
 
                     # Display feature scores
                     st.write("Feature Scores:")
-                    st.dataframe(feature_scores.round(4),
-                                 use_container_width=True)
+                    dataframe_safe(feature_scores.round(4),
+                                   use_container_width=True)
 
                     # Select best features
                     selected_features = feature_scores.iloc[:k_features][
@@ -1914,8 +1946,8 @@ elif selected_page == "Machine Learning" and st.session_state.raw_df is not None
                                 fold_df['AUC-ROC'] = fold_aucs
 
                             st.write("Cross-Validation Results:")
-                            st.dataframe(fold_df.round(4),
-                                         use_container_width=True)
+                            dataframe_safe(fold_df.round(4),
+                                           use_container_width=True)
 
                             # Confusion Matrix
                             st.subheader("Confusion Matrix")
@@ -2045,8 +2077,8 @@ elif selected_page == "Machine Learning" and st.session_state.raw_df is not None
 
                                 coef_df = coef_df.sort_values('Coefficient',
                                                               ascending=False)
-                                st.dataframe(coef_df.round(4),
-                                             use_container_width=True)
+                                dataframe_safe(coef_df.round(4),
+                                               use_container_width=True)
 
                                 # Visualize coefficients
                                 if 'Class' in coef_df.columns:
@@ -2169,7 +2201,7 @@ elif selected_page == "Machine Learning" and st.session_state.raw_df is not None
                         result_df = inference_df.copy()
                         result_df['Predicted Label'] = y_pred_labels
 
-                        st.dataframe(result_df, use_container_width=True)
+                        dataframe_safe(result_df, use_container_width=True)
 
                         # Download predictions
                         csv_result = result_df.to_csv(

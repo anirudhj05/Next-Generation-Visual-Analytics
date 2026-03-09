@@ -1,0 +1,9 @@
+[server]
+# Disable source-file watching in production to avoid watcher-related noise
+# from libraries like torch while improving runtime stability.
+fileWatcherType = "none"
+runOnSave = false
+
+[client]
+# Keep data transfer deterministic and efficient for dataframe rendering.
+showErrorDetails = true
