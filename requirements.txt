@@ -12,7 +12,7 @@ scikit-image==0.25.2
 matplotlib==3.10.3
 seaborn==0.13.2
 umap-learn==0.5.9.post2
-opencv-python==4.11.0.86
+opencv-python-headless==4.11.0.86
 xgboost==3.0.2
 joblib==1.4.2
 SimpleITK==2.4.1
