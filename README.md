@@ -62,6 +62,12 @@ To reproduce this dashboard, execute the following steps:
    ```bash
    streamlit run main.py
    ```
+   ## Live Demo
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://anirudhj05-next-generation-visual-analytics-main-uyqyfz.streamlit.app/)
+
+> Deployed at: https://anirudhj05-next-generation-visual-analytics-main-uyqyfz.streamlit.app/
+   
    ### Use the Upload panel in the sidebar to load:
    - Data: `.csv`, `.tsv`, `.xls`, `.xlsx`  
    - Medical Images: `.nii` or `.nii.gz`  
