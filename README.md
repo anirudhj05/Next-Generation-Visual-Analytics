@@ -140,7 +140,7 @@ For more instructions, look at the demo videos provided in the `Demo` folder.
    All processed images are displayed side-by-side with the original, and users can download the final outputs for further use.
 
 8. **AI Assistant**  
-   Finally, a conversational AI assistant is integrated into the dashboard to make it easier for biomedical researchers and doctors who lack computational skills to get started. This AI assistant is powered by Llama 4 Maverick with an option to fallback to Llama 3 if the primary API gets rate limited. Once the user uploads the dataset, the assistant automatically collects the following information so that it understands the data's structure and content before any questions are asked:  
+   Finally, a conversational AI assistant is integrated into the dashboard to make it easier for biomedical researchers and doctors who lack computational skills to get started. This AI assistant is powered by GPT-o3-mini-120b  with an option to fallback to Llama4 Maverick if the primary API gets rate limited. Once the user uploads the dataset, the assistant automatically collects the following information so that it understands the data's structure and content before any questions are asked:  
    1. Statistical summary (means, variances, percentiles)  
    2. Dataset structure (column names and data types)  
    3. Preview of the first few rows  
